@@ -14,7 +14,7 @@ def IsBinarySearchTree(tree):
         if not myUtility(tree[node][1], lower, tree[node][0]):
             return False
 
-        if tree[node][0] <= lower or tree[node][0] >= upper:
+        if tree[node][0] < lower or tree[node][0] >= upper:
             return False
 
         if not myUtility(tree[node][2], tree[node][0], upper):
@@ -25,7 +25,7 @@ def IsBinarySearchTree(tree):
     if len(tree) == 0 :
         result = True
     else :
-        result = myUtility(0, sys.maxsize * (-1), sys.maxsize)
+        result = myUtility(0, (sys.maxsize * 2 + 1) * (-1), sys.maxsize * 2 + 1)
     return result
 
 def main():
