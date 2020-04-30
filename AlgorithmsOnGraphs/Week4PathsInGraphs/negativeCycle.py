@@ -27,39 +27,27 @@ class Graph :
        self.graph[u].append(v)
        self.weights[u].append(w)
 
-    def isNegativeCycle(self, s, checked):
+    def isNegativeCycle(self, s):#, checked):
         self.S = s
         self.dist = [sys.maxsize] * self.numOfVertices
         self.prev = [-1] * self.numOfVertices
         self.dist[self.S] = 0
-        # visited = ["dummy", "dummy"] # In order to enter the for loop.
-        # oldDist = [d for d in self.dist]
-        # i = 0
-        # while i < len(visited)+2 :
         for V in range(self.numOfVertices-1) :
-            # if V > 0 and self.dist == oldDist :
-            #     break
-            # oldDist = [d for d in self.dist]
             queue = [self.S]
             visited = []
             while queue != []:
                 u = queue.pop(0)
                 visited.append(u)
-                checked[u] = True
                 for v in self.graph[u] :
                     if v not in visited :
                         queue.append(v)
                     if self.dist[v] > self.dist[u] + self.weights[u][self.graph[u].index(v)] :
                         self.dist[v] = self.dist[u] + self.weights[u][self.graph[u].index(v)]
                         self.prev[v] = u
-            # i += 1
-        # oldDist = [d for d in self.dist]
         for u in range(self.numOfVertices) :
             for v in self.graph[u] :
                 if self.dist[u] != sys.maxsize and self.dist[v] > self.dist[u] + self.weights[u][self.graph[u].index(v)]: # if (dist[u] != Integer.MAX_VALUE & & dist[u] + weight < dist[v]) - From Java
                     return True
-        # if self.dist != oldDist :
-        #     return True
         return False
 
     def hasNegativeCycle(self):
@@ -70,6 +58,77 @@ class Graph :
                      return 1
         return 0
 
+    def isNegativeCycle2(self, s):
+        self.S = s
+        self.dist = [sys.maxsize] * self.numOfVertices
+        self.prev = [-1] * self.numOfVertices
+        self.dist[self.S] = 0
+        for V in range(self.numOfVertices-1) :
+            queue = [self.S]
+            visited = []
+            sameValues = True
+            while queue != []:
+                u = queue.pop(0)
+                visited.append(u)
+                for v in self.graph[u] :
+                    if v not in visited and v not in queue:
+                        queue.append(v)
+                    if self.dist[v] > self.dist[u] + self.weights[u][self.graph[u].index(v)] :
+                        sameValues = False
+                        self.dist[v] = self.dist[u] + self.weights[u][self.graph[u].index(v)]
+                        self.prev[v] = u
+
+            if sameValues :
+                return False
+
+        for u in range(self.numOfVertices) :
+            for v in self.graph[u] :
+                if self.dist[u] != sys.maxsize and self.dist[v] > self.dist[u] + self.weights[u][self.graph[u].index(v)]:
+                    return True
+        return False
+
+    def hasNegativeCycle2(self):
+        if self.isNegativeCycle2(self.numOfVertices - 1) :
+            return 1
+        return 0
+
+
+    def isNegativeCycle3(self, s):
+        self.S = s
+        self.dist = [sys.maxsize] * self.numOfVertices
+        # self.prev = [-1] * self.numOfVertices
+        self.dist[self.S] = 0
+        for V in range(self.numOfVertices-1) :
+            queue = [self.S]
+            visited = []
+            sameValues = True
+            while queue != []:
+                u = queue.pop(0)
+                visited.append(u)
+                self.visited[u] = True
+                for v in self.graph[u] :
+                    if v not in visited and v not in queue:
+                        queue.append(v)
+                    if self.dist[v] > self.dist[u] + self.weights[u][self.graph[u].index(v)] :
+                        sameValues = False
+                        self.dist[v] = self.dist[u] + self.weights[u][self.graph[u].index(v)]
+                        # self.prev[v] = u
+            if sameValues :
+                return False
+        for u in range(self.numOfVertices) :
+            for v in self.graph[u] :
+                if self.dist[u] != sys.maxsize and self.dist[v] > self.dist[u] + self.weights[u][self.graph[u].index(v)]:
+                    return True
+        return False
+
+    def hasNegativeCycle3(self):
+        self.visited = [False] * self.numOfVertices
+        for i in range(self.numOfVertices) :
+            if not self.visited[i] :
+                result  = self.isNegativeCycle3(i)
+                if result : return 1
+        return 0
+
     def printGraph(self) :
         printList = []
         printList.append((self.numOfVertices, self.getNumOfEdges()))
@@ -78,9 +137,7 @@ class Graph :
                 printList.append((v, e))
         return printList
 
-
 if __name__ == '__main__':
-
     inp = input().split()
     n = int(inp[0])
     m = int(inp[1])
@@ -89,12 +146,16 @@ if __name__ == '__main__':
         inp = input().split()
         edges.append((int(inp[0]), int(inp[1]), int(inp[2])))
 
+    # myGraph = Graph(n + 1) #n+1 node is the additional node we need to perform the procedure isNegative
     myGraph = Graph(n)
     for (a, b, w) in edges:
         myGraph.importEdge(a - 1, b - 1, w)
-    print(myGraph.hasNegativeCycle())
+    # for i in range(n):
+    #     myGraph.importEdge(n + 1 - 1, i, 0)
+    # print(myGraph.hasNegativeCycle2())
     # print(myGraph.negative_cycle())
-
+    print(myGraph.hasNegativeCycle3())
+    # print(myGraph.hasNegativeCycle4())
 #  --------------- H E L P -----------------
 # For instance, you can initialize all distances with zero, essentially adding a new vertex and 0-edges from it to all of the nodes.
-# It does not affect the existence of a negative cycle.
+# # It does not affect the existence of a negative cycle.
