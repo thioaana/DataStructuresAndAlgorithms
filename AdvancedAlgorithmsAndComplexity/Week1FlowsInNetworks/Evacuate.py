@@ -26,7 +26,7 @@ class Graph :
         self.graph[u].remove(v)
         del self.capacity[(u, v)]
 
-    def printGraph(self) :
+def printGraph(self) :
         printList = []
         printList.append((self.numOfVertices, self.getNumOfEdges()))
         for v in range(self.numOfVertices) :
