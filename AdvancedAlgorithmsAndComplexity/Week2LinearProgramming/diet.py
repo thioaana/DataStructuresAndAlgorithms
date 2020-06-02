@@ -144,26 +144,16 @@ def FindMax(v, c, infVer) :
       finalSol.append(k)
   return finalSol #(count, v[index])
 
-# def CheckForInfinity():
-
-
 def solve_diet_problem(n, m, A, b, c):
   vertices, infSol = GetVertices(n, m, A, b)
   vertices = CheckValidation(vertices, A, b)
   if len(vertices) == 0 :
     return -1, [0]
-  # if len(vertices) <= m :
-  #   return 1, [0]
   bounded = FindMax(vertices, c, infSol)
-  if len(bounded) == 1 : #bounded[0] == 1 :
-    # if bounded[1] in infSol :
-        #return 1, [0]
-    # else :
+  if len(bounded) == 1 :
     return 0, bounded[0]
   else :
     return 1, [0]
-    # Write your code here
-  # return [0, [0] * m]
 
 if __name__ == '__main__':
   (n ,m , A, b, c) = ReadData()
