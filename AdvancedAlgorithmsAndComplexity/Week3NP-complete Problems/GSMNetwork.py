@@ -45,32 +45,35 @@ def printEquisatisfiableSatFormula():
                 literals.append(varnum(e, c))
                 OnlyNegations(literals)
 
-    # Print number of Clauses and Variables
+    # Print Header - number of Clauses and Variables
     print(" ".join(map(str, [len(clauses), n * 3])))
+    # Print Clauses with 0 in the end of each clause
     for cl in clauses :
         cl.append(0)
         print(" ".join(map(str, cl)))
 
+def Testing():
+    with open("tmp.cnf", "w") as f :
+        f.write("p cnf {} {}\n".format(n * 3, len(clauses)))
+        for cl in clauses :
+            f.write(" ".join(map(str, cl)) + "\n")
+    f.close()
+    os.system("minisat tmp.cnf")
+    os.system("minisat tmp.cnf tmp.sat")
+
+    with open("tmp.sat", "r") as satfile:
+        for line in satfile :
+            if line.split()[0] == "UNSAT" :
+                print("There is no solution")
+            elif line.split()[0] == "SAT" :
+                pass
+            else :
+                assignment = [int(x) for x in line.split()]
+                for v in range(1, n + 1):
+                    for c in colors:
+                        if [v, c] in assignment :
+                            print(c, end = "")
+                            break
+
 printEquisatisfiableSatFormula()
-#  ------ TESTING------
-# with open("tmp.cnf", "w") as f :
-#     f.write("p cnf {} {}\n".format(n * 3, len(clauses)))#varnum(n, 3), len(clauses)))
-#     for cl in clauses :
-#         f.write(" ".join(map(str, cl)) + "\n")
-# f.close()
-# os.system("minisat tmp.cnf")
-# os.system("minisat tmp.cnf tmp.sat")
-#
-# with open("tmp.sat", "r") as satfile:
-#     for line in satfile :
-#         if line.split()[0] == "UNSAT" :
-#             print("There is no solution")
-#         elif line.split()[0] == "SAT" :
-#             pass
-#         else :
-#             assignment = [int(x) for x in line.split()]
-#             for v in range(1, n + 1):
-#                 for c in colors:
-#                     if [v, c] in assignment :
-#                         print(c, end = "")
-#                         break
+# Testing()
