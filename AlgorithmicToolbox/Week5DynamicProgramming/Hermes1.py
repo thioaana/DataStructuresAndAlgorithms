@@ -1,7 +1,0 @@
-print("hello world")
-print("My name is ilithios")
-y=input("How old are you ?")
-print("Ok so you are ", y)
-x = input("What is your favourite color ?")
-print("I dont like color", x )
-print("So you are ", y ,"and you like ",x)
