@@ -76,7 +76,7 @@ if __name__ == "__main__" :
     reads = getData()
     k = len(reads[0])
     numReads = len(reads)
-    graph, mapIndToValue, mapValueToInd = getDBGraph(reads)
+
     path = getEulerianPath(copy.deepcopy(graph))
     universal = mapIndToValue[path[0]]
     for i in range(1, len(path)):# - (k-1)): An alternative, without the last 2 lines

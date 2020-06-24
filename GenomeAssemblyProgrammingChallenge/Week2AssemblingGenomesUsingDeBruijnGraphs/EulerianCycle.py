@@ -13,7 +13,9 @@ def isEulerian(nV, dV):
 
 # 1. Start with an empty stack and an empty circuit (eulerian path).
 #    - If all vertices have same out-degrees as in-degrees - choose any of them.
-#    - If all but 2 vertices have same out-degree as in-degree, and one of those 2 vertices has out-degree with one greater than its in-degree, and the other has in-degree with one greater than its out-degree - then choose the vertex that has its out-degree with one greater than its in-degree.
+#    - If all but 2 vertices have same out-degree as in-degree,
+#      and one of those 2 vertices has out-degree with one greater than its in-degree,
+#      and the other has in-degree with one greater than its out-degree - then choose the vertex that has its out-degree with one greater than its in-degree.
 #    - Otherwise no euler circuit or path exists.
 # 2. If current vertex has no out-going edges (i.e. neighbors) - add it to circuit,
 #    remove the last vertex from the stack and set it as the current one.
