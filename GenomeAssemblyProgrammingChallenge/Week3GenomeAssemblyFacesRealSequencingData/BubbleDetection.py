@@ -50,9 +50,9 @@ def getDBGraph(k, rs):
                 counter += 1
             if dictValueToInd[suffix] not in gr[dictValueToInd[prefix]]:
                 gr[dictValueToInd[prefix]].append(dictValueToInd[suffix])
-                degr[dictValueToInd[prefix]][0] += 1
-                degr[dictValueToInd[suffix]][1] += 1
-    return gr, degr
+                degr[dictValueToInd[prefix]][1] += 1
+                degr[dictValueToInd[suffix]][0] += 1
+    return gr, degr, dictValueToInd, dictIndToValue
 
 # Greg G.
 # Find all nodes with outdegree > 1, except self loops (OUT nodes) and indegree > 1, except self loops (IN nodes). We're looking for paths that start with an OUT node and end with an IN node.
@@ -84,35 +84,65 @@ def getDBGraph(k, rs):
 
 
 def getBubbles(gr, degs, t):
-    def getPaths(u, t) :    # def BFS(self, s):
-            candidates = []
-            visited = [False] * (len(gr))   # Mark all the vertices as not visited
-            queue = [u] # Create a queue for BFS
-            visited[u] = True   # Mark the source node as visited and enqueue it
-            level = 0
-            while queue and countThreshold <= t:
-                s = queue.pop(u)    # Dequeue a vertex from queue and print it
-                # pathprint(s, end=" ")
+    def getCandidatesV() :
+        cand = []
+        visited = [False] * (len(gr))   # Mark all the vertices as not visited
+        queue = [u] # Create a queue for BFS
+        visited[u] = True   # Mark the source node as visited and enqueue it
+        level = {u:0}
+        currentLevel = 0
+        while queue and currentLevel <= t:
+            s = queue.pop(0)    # Dequeue a vertex from queue and print it
+            # pathprint(s, end=" ")
 
-                # Get all adjacent vertices of the dequeued vertex s.
-                # If a adjacent has not been visited, then mark it visited and enqueue it
-                for i in gr[s]:
-                    if visited[i] == False:
-                        queue.append(i)
-                        visited[i] = True
-                        level += 1
-                    else :
-                        candidates.append(i)
+            # Get all adjacent vertices of the dequeued vertex s.
+            # If a adjacent has not been visited, then mark it visited and enqueue it
+            for i in gr[s]:
+                if i == s : continue
+                if visited[i] == False:
+                    queue.append(i)
+                    visited[i] = True
+                    level[i] = level[s] + 1
+                    if level[i] > currentLevel : currentLevel = level[i]
+                else :
+                    cand.append(i)
+        return cand
 
-    # For each Vertex with out-degree > 1 + selfLoops, get all Paths
-    for u in range(len(gr)):
+
+    # The function to do DFS traversal. It uses recursive DFSUtil()
+    def getPaths(gr, v, cand, visited, result):
+        # def DFSUtil(v, visited):
+        if v == cand : return
+        # Mark the current node as visited and print it
+        visited[v] = True
+        result.append(v)
+
+        # Recur for all the vertices adjacent to this vertex
+        for i in gr[v]:
+            if visited[i] == False:
+                getPaths(gr, i, cand, visited, result)
+
+        # visited = [False] * len(gr) # Mark all the vertices as not visited
+        # DFSUtil(v, visited) # Call the recursive helper function # to print DFS traversal
+
+        # For each Vertex with out-degree > 1 + selfLoops, get all Paths
+    candidates ={}
+    paths = {}
+    for u in range(len(gr)) :
         selfLoops = gr[u].count(u)
-        if degs[u[1] <= 1 + selfLoops: continue
-        paths = getPahs(u, t)
+        if degs[u][1] <= (1 + selfLoops) : continue
+        candidates[u] = getCandidatesV()
+    for u in candidates:
+        paths[u] = []
+        for w in candidates[u] :
+            result= []
+            getPaths(gr, u, w, [False] * len(gr), result)
+            paths[u].append(result)
+    print()
 
 
 if __name__ == "__main__":
     k, t, reads = getData()
     lengthOfRead = len(reads[0])
-    graph, degrees = getDBGraph(k, reads)
+    graph, degrees, dVtoI, dItoV = getDBGraph(k, reads)
     getBubbles(graph, degrees, t)
