@@ -3,20 +3,20 @@
 import sys
 
 def getData():
-    # lines = sys.stdin.read().splitlines()
-    # [k, t] = [int(i) for i in lines[0].split()]
-    # r = lines[1:]
-    # return k, t, r
-    # The code below is for temporary use.
-    [k, t] = [int(i) for i in input().split()]
-    r = []
-    while True:
-        read = input()
-        if read != "":
-            r.append(read)
-        else:
-            break
+    lines = sys.stdin.read().splitlines()
+    [k, t] = [int(i) for i in lines[0].split()]
+    r = lines[1:]
     return k, t, r
+    # The code below is for temporary use.
+    # [k, t] = [int(i) for i in input().split()]
+    # r = []
+    # while True:
+    #     read = input()
+    #     if read != "":
+    #         r.append(read)
+    #     else:
+    #         break
+    # return k, t, r
 
 
 def getDBGraph(k, rs):
@@ -82,9 +82,8 @@ def getDBGraph(k, rs):
 # Save the paths with t-th edge ending in vertex with more than one in-degree + selfLoops
 
 
-
 def getBubbles(gr, degs, t):
-    def getCandidatesV() :
+    def getCandidatesV() : #BFS
         cand = []
         visited = [False] * (len(gr))   # Mark all the vertices as not visited
         queue = [u] # Create a queue for BFS
@@ -105,40 +104,54 @@ def getBubbles(gr, degs, t):
                     level[i] = level[s] + 1
                     if level[i] > currentLevel : currentLevel = level[i]
                 else :
-                    cand.append(i)
+                    if i not in cand : cand.append(i)
         return cand
 
-
-    # The function to do DFS traversal. It uses recursive DFSUtil()
-    def getPaths(gr, v, cand, visited, result):
+    # The function to do DFS traversal.
+    def getPaths(gr, v, cand, visited, path, fullPaths):
         # def DFSUtil(v, visited):
-        if v == cand : return
         # Mark the current node as visited and print it
         visited[v] = True
-        result.append(v)
+        path.append(v)
+        if v == cand :
+            fullPaths.append(path[:])
+        else :
+            for i in gr[v]:
+                if visited[i] == False:
+                    getPaths(gr, i, cand, visited, path, fullPaths)
+        path.pop()
+        visited[v] = False
+        if not path : return fullPaths
+        # # Recur for all the vertices adjacent to this vertex
+        # for i in gr[v]:
+        #     if visited[i] == False:
+        #         result.append(i)
+        #         getPaths(gr, i, cand, visited, result)
 
-        # Recur for all the vertices adjacent to this vertex
-        for i in gr[v]:
-            if visited[i] == False:
-                getPaths(gr, i, cand, visited, result)
+    def isBubble(path1, path2):
+        for v in path1[1:-1] :
+            if v in path2 : return False
+        return True
 
-        # visited = [False] * len(gr) # Mark all the vertices as not visited
-        # DFSUtil(v, visited) # Call the recursive helper function # to print DFS traversal
-
-        # For each Vertex with out-degree > 1 + selfLoops, get all Paths
     candidates ={}
     paths = {}
+    numBubbles = 0
+    # For each Vertex u with out-degree > 1 + selfLoops, get all Candidates Target Nodes
     for u in range(len(gr)) :
         selfLoops = gr[u].count(u)
         if degs[u][1] <= (1 + selfLoops) : continue
         candidates[u] = getCandidatesV()
+
+    # For each pair u, w get all paths
     for u in candidates:
         paths[u] = []
         for w in candidates[u] :
-            result= []
-            getPaths(gr, u, w, [False] * len(gr), result)
-            paths[u].append(result)
-    print()
+            paths[u] = getPaths(gr, u, w, [False] * len(gr), [], [])
+            for indPath1 in range(len(paths[u])):
+                for indPath2 in range(indPath1 + 1, len(paths[u])):
+                    if indPath1 == indPath2 : continue
+                    if isBubble(paths[u][indPath1], paths[u][indPath2]) : numBubbles += 1
+    print(numBubbles)
 
 
 if __name__ == "__main__":
@@ -146,3 +159,4 @@ if __name__ == "__main__":
     lengthOfRead = len(reads[0])
     graph, degrees, dVtoI, dItoV = getDBGraph(k, reads)
     getBubbles(graph, degrees, t)
+
