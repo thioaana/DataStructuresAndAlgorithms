@@ -3,20 +3,20 @@
 import sys
 
 def getData():
-    lines = sys.stdin.read().splitlines()
-    [k, t] = [int(i) for i in lines[0].split()]
-    r = lines[1:]
-    return k, t, r
-    # The code below is for temporary use.
-    # [k, t] = [int(i) for i in input().split()]
-    # r = []
-    # while True:
-    #     read = input()
-    #     if read != "":
-    #         r.append(read)
-    #     else:
-    #         break
+    # lines = sys.stdin.read().splitlines()
+    # [k, t] = [int(i) for i in lines[0].split()]
+    # r = lines[1:]
     # return k, t, r
+    # The code below is for temporary use.
+    [k, t] = [int(i) for i in input().split()]
+    r = []
+    while True:
+        read = input()
+        if read != "":
+            r.append(read)
+        else:
+            break
+    return k, t, r
 
 def getDBGraph(k, rs):
     lenRead = len(rs[0])
