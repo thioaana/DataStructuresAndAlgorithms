@@ -5,17 +5,20 @@ class Node :
         self.parent = None
         self.left = None
         self.right = None
+        self.height = 1
 
     def getKey(self):   return self.key
     def getValue(self): return self.value
     def getParent(self):return self.parent
     def getLeft(self):  return self.left
     def getRight(self): return self.right
+    def getHeight(self): return self.height
     def setParent(self, n):  self.parent = n
     def setLeft(self, n):  self.left = n
     def setRight(self, n):  self.right = n
     def setKey(self, k): self.key = k
     def setValue(self, v): self.value = v
+    def setHeight(self, h): self.height = h
 
 class Tree:
     def __init__(self):
@@ -55,8 +58,8 @@ class Tree:
             else : parent.setLeft(newNode)
 
     # Input : Key of the node to be deleted
-    # Output: True if the node is found in the Tree and deleted
-    #         False if the node is not found in the Tree
+    # Output: True if the node is found in the Tree and deleted and the parent node of the deleted node
+    #         False if the node is not found in the Tree, and None
     def delete(self, key):
         # pointer to the parent node of current node
         parent = None
@@ -74,7 +77,7 @@ class Tree:
 
         # if key is not in the Tree just return
         if currNode is None :
-            return False
+            return False, None
 
         # Case 1: Node to be deleted has no children. It is a leaf
         if currNode.getLeft() is None and currNode.getRight() is None :
@@ -85,6 +88,7 @@ class Tree:
                     parent.setLeft(None)
                 else :
                     parent.setRight(None)
+
 
         # Case 2: Node to be deleted has two children.
         elif currNode.getLeft() and currNode.getRight() :
@@ -112,7 +116,7 @@ class Tree:
                     parent.setRight(child)
                 child.setParent(parent)
 
-        return True
+        return True, currNode.getParent()
 
 # if __name__ == "__main__" :
 #     myTree = Tree()

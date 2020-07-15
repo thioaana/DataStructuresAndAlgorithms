@@ -10,10 +10,11 @@ class Tree(BST.Tree):
 
     # Helper function to find the Hight of a node, used in balancing the Balanced BST
     def _getNodeHeight(self,  n):
+        if n is None : return 0
         if n.getLeft() is None and n.getRight() is None :
             return 1
         else :
-            return 1 + max(self._nodeHeight(n.getLeft()), self._nodeHeight(n.getRight()))
+            return 1 + max(self._getNodeHeight(n.getLeft()), self._getNodeHeight(n.getRight()))
 
     def _Rebalance(self, n):
         parent = n.getParent()
@@ -25,7 +26,20 @@ class Tree(BST.Tree):
             self._RebalanceLeft(n)
         # self.AdjustHeight(n)
         if parent is not None :
+            self._AdjustHeight(parent)
             self._Rebalance(parent)
+
+    def _AdjustHeight(self, n) :
+        leftBranch = n.getLeft()
+        rightBranch = n.getRight()
+        if leftBranch and rightBranch :
+            n.setHeight(1 + max(leftBranch.getHeight(), rightBranch.getHeight()))
+        elif leftBranch is None and rightBranch :
+            n.setHeight(1 + rightBranch.getHeight())
+        elif leftBranch  and rightBranch is None:
+            n.setHeight(1 + leftBranch.getHeight())
+        else :
+            n.setHeight(1)
 
     def _RebalanceRight(self, n):
         m = n.getLeft()
@@ -33,59 +47,81 @@ class Tree(BST.Tree):
             self._RotateLeft(m)
         self._RotateRight(n)
 
-    def _RotateRight(self, n):
-        return
+    def _RebalanceLeft(self, n):
+        m = n.getRight()
+        if self._getNodeHeight(m.getLeft()) > self._getNodeHeight(m.getRight()) :
+            self._RotateRight(m)
+        self._RotateLeft(n)
 
-    # def AdjustHeight(self, n):
-    #
-    # def _getParent(self, curNode, k):
-    #     # Case 1: Searching for the parent of root node. ie parent is None.
-    #     if k == self.root.getKey() :
-    #         return True, None
-    #
-    #     parent = curNode
-    #     if parent.getLeft().getKey() == k or parent.getRight().getKey() == k :
-    #         return True, parent
-    #     if curNode.getKey() < k :
-    #         if curNode.getRight()  : return self._getParent(curNode.getRight(), k)
-    #         else :                   return False, parent
-    #     else :
-    #         if curNode.getLeft() :   return self._getParent(curNode.getLeft(), k)
-    #         else :                   return False, parent
+    def _RotateRight(self, n):
+        # Saves in memory
+        nParent = n.getParent()
+        y = n.getLeft()
+        yRight = y.getRight()
+        # Rotate
+        y.setRight(n)
+        n.setLeft(yRight)
+        # Define new parents
+        if n.getLeft()  : n.getLeft().setParent(n)
+        if n.getParent(): y.setParent(n.getParent())
+        n.setParent(y)
+        if nParent :
+            if nParent.getLeft() == n :
+                nParent.setLeft(y)
+            else :
+                nParent.setRight(y)
+        else :
+            self.root = y
+        # Update heights
+        self._AdjustHeight(n)
+        self._AdjustHeight(y)
+        if nParent : self._AdjustHeight(nParent)
+
+    def _RotateLeft(self, n):
+        # Saves in memory
+        nParent = n.getParent()
+        y = n.getRight()
+        yLeft = y.getLeft()
+        # Rotate
+        y.setLeft(n)
+        n.setRight(yLeft)
+        # Define new parents
+        if n.getRight()  : n.getRight().setParent(n)
+        if n.getParent() : y.setParent(n.getParent())
+        n.setParent(y)
+        if nParent :
+            if nParent.getLeft() == n:
+                nParent.setLeft(y)
+            else:
+                nParent.setRight(y)
+        else :
+            self.root = y
+        # Update heights
+        self._AdjustHeight(n)
+        self._AdjustHeight(y)
+        if nParent : self._AdjustHeight(nParent)
 
     # Input : Key of the node to be deleted
     # Output: True if the node is found in the Tree and deleted
     #         False if the node is not found in the Tree
-
     def insert(self, k, v):
         BST.Tree.insert(self, k, v)
         found, newNode = self._Find(self.root, k)
         if found :
             self._Rebalance(newNode)
 
+    def delete(self, key):
+        (deleted, parent) = BST.Tree.delete(self, key)
+        if deleted :
+            self._Rebalance(parent)
 
 if __name__ == "__main__" :
     myTree = Tree()
-
-    # keys = [15, 10, 20, 8, 12, 16]
-    # for k in keys:
-    #     myTree.insert(k, k)
-    myTree.insert(22, 1)#AVLInsert(16, 8)
-    print(myTree)
-    myTree.delete(15)
-    myTree.delete(10)
-    # myTree.insert(4, 4)
-    # myTree.insert(6, 6)
-    # myTree.insert(8, 8)
-    # myTree.insert(5, 5)
-    # myTree.insert(4, 4)
-    # myTree.insert(6, 6)
-    # myTree.insert(1, 1)
-    # myTree.insert(2, 2)
-    # myTree.delete(4)
-    # myTree.delete(1)
-    # myTree.delete(5)
-    # myTree.delete(6)
-    # myTree.delete(8)
-    # myTree.delete(2)
+    # keys = [13, 10, 15, 5, 11, 16, 4, 6] # insert(7, 7)
+    # keys = [30, 5, 35, 32, 40]
+    # keys = [5, 2, 7, 1, 4, 6, 9, 3, 16] #insert(15, 15)
+    keys = [44, 17, 62, 32, 50, 78, 48, 54, 88] # delete(15, 15)
+    for k in keys:
+        myTree.insert(k, k)
+    myTree.insert(15, 15)
     print(5)
